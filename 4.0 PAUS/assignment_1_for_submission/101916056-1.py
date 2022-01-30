@@ -131,7 +131,7 @@ def main():
         logging.info(strerr)
         print(odf.head(20))
         print(odf.tail(20))
-        odf.to_csv('101916056-output.csv', index=True)
+        odf.to_csv('101916056-output.csv', index=False)
 
 
 if __name__ == '__main__':
