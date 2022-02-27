@@ -1,2 +1,4 @@
-h=2
-print(h)
+library(Peptides)
+library(peptider)
+mydata=read.table("input.csv")
+mydata
