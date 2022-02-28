@@ -1,4 +1,3 @@
-
 import sys
 import numpy as np
 import copy as copy
@@ -78,7 +77,7 @@ def topsis(df, wgt, impt):
             temp = maxm[ind]
             maxm[ind] = minm[ind]
             minm[ind] = temp
-            ind+=1
+        ind+=1
           
     df.loc[ilen] = maxm
     df.loc[len(df.index)] = minm
@@ -125,6 +124,7 @@ def topsis(df, wgt, impt):
 
 
 def main():
+    
     n=len(sys.argv)
     if n==5:
         try:
@@ -165,10 +165,7 @@ def main():
                     if(im[i]!='+' and im[i]!='-'):
                         print("Impacts must be either +ve or -ve not ",im[i])
                         sys.exit()
-                im=sys.argv[3]
-                df=pd.read_csv(file)
-
-                n=len(sys.argv)
+                
                 inFile = sys.argv[1]
                 weight = sys.argv[2]
                 impact = sys.argv[3]
@@ -176,10 +173,9 @@ def main():
                 impact_li = impact.split(',')
                 weight_li = weight.split(',')
                 df = pd.read_csv(inFile)
+
                 result = topsis(df, weight_li, impact_li)
-                # result.to_csv(result_file)
-                # result = topsis(df, w, im)
-                # result.to_csv(output)
+                result.to_csv(result_file)
             else:
                 print("Input file must contain three or more columns")
                 sys.exit()
