@@ -1,0 +1,88 @@
+# Importing standard Qiskit libraries: 
+from qiskit import *
+from qiskit.providers.ibmq import least_busy
+from qiskit.tools.jupyter import *
+from qiskit.visualization import *
+%matplotlib inline
+
+circuit = QuantumCircuit(7+1,7)
+circuit.draw("mpl")
+
+circuit.h([0,1,2,3,4,5,6])
+circuit.x(7)
+circuit.h(7)
+
+circuit.barrier()
+circuit.draw("mpl")
+
+circuit.cx(6,7)
+circuit.cx(3,7)
+circuit.cx(2,7)
+circuit.cx(0,7)
+
+circuit.barrier()
+circuit.draw("mpl")
+
+circuit.h([0,1,2,3,4,5,6])
+
+circuit.barrier()
+
+circuit.measure([0,1,2,3,4,5,6],[0,1,2,3,4,5,6])
+
+circuit.draw("mpl")
+
+simulator = Aer.get_backend('qasm_simulator')
+result = execute(circuit, backend = simulator, shots = 1).result()
+counts = result.get_counts()
+print(counts)
+plot_histogram(counts)
+
+secret_number = input("Input a Binary String of your choice ")  
+# Not more than 4 bits if you want to run on a real quantum device later on
+# We put '1010' in this example
+
+bv_circ = QuantumCircuit(len(secret_number)+1,len(secret_number))
+
+bv_circ.h(range(len(secret_number)))
+bv_circ.x(len(secret_number))
+bv_circ.h(len(secret_number))
+
+bv_circ.barrier()
+
+# bv_circ.draw("mpl")
+
+for digit, query in enumerate(reversed(secret_number)):
+    if query == "1":
+        bv_circ.cx(digit, len(secret_number))
+              
+bv_circ.barrier()
+
+# bv_circ.draw("mpl")
+
+bv_circ.h(range(len(secret_number)))
+
+bv_circ.barrier()
+
+bv_circ.measure(range(len(secret_number)),range(len(secret_number)))
+
+# bv_circ.draw("mpl")
+
+simulator = Aer.get_backend("qasm_simulator")
+result = execute(bv_circ, backend = simulator, shots = 1).result()
+counts = result.get_counts()
+print(counts)
+plot_histogram(counts)
+
+# Enabling our IBMQ accounts to get the least busy backend device with less than or equal to 5 qubits
+IBMQ.enable_account('IBM Q API Token')
+provider = IBMQ.get_provider(hub='ibm-q')
+provider.backends()
+backend = least_busy(provider.backends(filters=lambda x: x.configuration().n_qubits = 5 and
+                                   x.configuration().n_qubits >= 2 and
+                                   not x.configuration().simulator and x.status().operational==True))
+print("least busy backend: ", backend)
+
+exp = execute(bv_circ, backend, shots = 1024)
+result_exp = exp.result()
+counts_exp = result_exp.get_counts()
+plot_histogram([counts_exp,counts])
